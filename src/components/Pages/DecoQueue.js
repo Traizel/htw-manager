@@ -304,20 +304,30 @@ class DecoQueue extends Component {
         let decoSku6 = "";
         let descrip = "";
 
-        let data = [];
-        if (this.props.itemlist) {
-            data = this.props.progresslist.map((item) => [
-                item.order_number,
-                item.sku,
-                item.description,
-                item.product_length,
-                item.qty,
-                this.cleanDate(item.created_at)
-            ]);
-        } else {
-            data = [];
-        }
-        
+        const data = this.props.itemlist.map((item) => [
+            item.order_number,
+            item.sku,
+            item.description,
+            item.product_length,
+            item.qty,
+            item.need_to_run,
+            this.cleanDate(item.created_at),
+        ]);
+
+        // let data = [];
+        // if (this.props.itemlist) {
+        //     data = this.props.itemList.map((item) => [
+        //         item.order_number,
+        //         item.sku,
+        //         item.description,
+        //         item.product_length,
+        //         item.qty,
+        //         this.cleanDate(item.created_at)
+        //     ]);
+        // } else {
+        //     data = [];
+        // }
+
         return (
             <div className="queue-container-return">
                 <br />
