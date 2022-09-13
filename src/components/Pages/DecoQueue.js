@@ -12,6 +12,7 @@ import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AssignmentTurnedInIcon from "@material-ui/icons/AssignmentTurnedIn";
 import QueueIcon from "@material-ui/icons/Queue";
+import CloseIcon from "@material-ui/icons/Close";
 import QueueNav from "./QueueNav";
 import swal from "sweetalert";
 
@@ -82,8 +83,6 @@ class DecoQueue extends Component {
         this.props.dispatch({
             type: "DELETE_HISTORY_RANGE",
         });
-        console.log("Item List Reducer:", this.props.itemlist)
-        console.log("ALL Reducer decoqueue", this.props)
     }
 
     handleChange = (event, fieldName) => {
@@ -285,7 +284,7 @@ class DecoQueue extends Component {
 
     cleanDate = (date) => {
         if (date) {
-            let cleanedDate = date.slice(5, 16);
+            let cleanedDate = date.slice(5, 15);
             return cleanedDate;
         } else {
             return
@@ -317,17 +316,6 @@ class DecoQueue extends Component {
         } else {
             data = [];
         }
-
-
-        // const data = this.props.itemlist.map((item) => [
-        //     item.order_number,
-        //     item.sku,
-        //     item.description,
-        //     item.product_length,
-        //     item.qty,
-        //     item.need_to_run,
-        //     this.cleanDate(item.created_at),
-        // ]);
 
         return (
             <div className="queue-container-return">
@@ -363,7 +351,6 @@ class DecoQueue extends Component {
                                 onClick={(event) => {
                                     if (dataSelector[0]) {
                                         event.preventDefault();
-                                        console.log(dataSelector);
                                         for (let index = 0; index < dataSelector.length; index++) {
                                             //loop through the dataselector to know which indexes are checked, preform action on those indexes
                                             const element = dataSelector[index];
@@ -491,7 +478,6 @@ class DecoQueue extends Component {
                                         let checkInput = document.getElementsByTagName("input");
                                         for (let index = 0; index < checkInput.length; index++) {
                                             const element = checkInput[index];
-                                            console.log(element.checked);
                                             element.checked = false;
                                         }
                                         dataSelector = [];
@@ -569,7 +555,6 @@ class DecoQueue extends Component {
                                                     toggle3: false,
                                                 });
                                             } else {
-                                                console.log("delete canceled");
                                             }
                                         });
                                     } else {
@@ -635,55 +620,6 @@ class DecoQueue extends Component {
                                     },
                                 },
                             },
-                            // Select All Checkbox
-                            // {
-                            //     name: "",
-                            //     options: {
-                            //         filter: false,
-                            //         sort: false,
-                            //         empty: true,
-                            //         confirmFilters: true,
-                            //         customHeadRender: (dataIndex, rowIndex) => {
-                            //             return (
-                            //                 <div className="select-all">
-                            //                     <input
-                            //                         type="checkbox"
-                            //                         id={dataIndex}
-                            //                         style={{ cursor: "pointer", width: 50, height: 50 }}
-                            //                         name=""
-                            //                         value=""
-                            //                         onClick={(event) => {
-                            //                             // if clicked, check the checkbox
-                            //                             let checkChecked = document.getElementById(dataIndex)
-                            //                                 .checked;
-                            //                             const itemArray = this.props.itemlist;
-                            //                             const item = itemArray[dataIndex];
-                            //                             if (checkChecked === true) {
-                            //                                 //...and push the index into the dataselector
-                            //                                 dataSelector.push(itemArray);
-                            //                             } else {
-                            //                                 //when deselected, remove the index from the dataselector
-                            //                                 for (
-                            //                                     let index = 0;
-                            //                                     index < dataSelector.length;
-                            //                                     index++
-                            //                                 ) {
-                            //                                     const element = dataSelector[index];
-                            //                                     if (item.id === element.id) {
-                            //                                         dataSelector.splice(index, 1);
-                            //                                     }
-                            //                                 }
-                            //                             }
-                            //                             console.log(dataIndex);
-                            //                             console.log(itemArray)
-                            //                             console.log("DATA SELECTOR", dataSelector)
-                            //                         }}
-                            //                     ></input>
-                            //                 </div>
-                            //             );
-                            //         },
-                            //     },
-                            // },
                             { name: "Order Number" },
                             {
                                 name: "SKU",
@@ -691,11 +627,12 @@ class DecoQueue extends Component {
                                     filter: true,
                                     sort: true,
                                     // empty: true,
-                                    customBodyRender: (value, tableMeta, updateValue) => {
+                                    customBodyRender: (value, dataIndex) => {
                                         decoSku3 = value.slice(0, 6);
                                         decoSku5 = value.slice(0, 3);
                                         decoSku7 = value.slice(0, 7);
                                         decoSku6 = value.slice(0, 8);
+                                        let descrip = dataIndex.rowData[3];
                                         if (
                                             decoSku5 === "SD1" ||
                                             decoSku5 === "SD2" ||
@@ -706,7 +643,8 @@ class DecoQueue extends Component {
                                             decoSku5 === "SD7" ||
                                             decoSku5 === "SD8" ||
                                             decoSku5 === "SD9" ||
-                                            decoSku6 === "SETUPFEE"
+                                            decoSku6 === "SETUPFEE" ||
+                                            descrip.includes("Bundle")
                                         ) {
                                             return (
                                                 <div
@@ -731,7 +669,8 @@ class DecoQueue extends Component {
                                             decoSku5 === "CS6" ||
                                             decoSku5 === "CS7" ||
                                             decoSku5 === "CS8" ||
-                                            decoSku5 === "CS9"
+                                            decoSku5 === "CS9" ||
+                                            decoSku6 === "CUSTOM-S"
                                         ) {
                                             return (
                                                 <div
@@ -781,7 +720,8 @@ class DecoQueue extends Component {
                                             decoSku5 === "CD6" ||
                                             decoSku5 === "CD7" ||
                                             decoSku5 === "CD8" ||
-                                            decoSku5 === "CD9"
+                                            decoSku5 === "CD9" ||
+                                            decoSku6 === "CUSTOM-H"
                                         ) {
                                             return (
                                                 <div
@@ -847,13 +787,28 @@ class DecoQueue extends Component {
                                         if (value) {
                                             descrip = value.slice(value.length - 4);
                                         }
-                                        if (descrip === "Pack" || descrip === "pack") {
+                                        if (descrip === "Pack" || descrip === "pack" || descrip === "PACK") {
                                             return (
                                                 <div
                                                     style={{
                                                         width: "100%",
                                                         height: "100%",
                                                         backgroundColor: "#5D82C1",
+                                                        color: "black",
+                                                        textAlign: "center",
+                                                        padding: "10px",
+                                                    }}
+                                                >
+                                                    {value}
+                                                </div>
+                                            );
+                                        } else if (value.includes("Bundle")) {
+                                            return (
+                                                <div
+                                                    style={{
+                                                        width: "100%",
+                                                        height: "100%",
+                                                        backgroundColor: "rgb(131 206 206)",
                                                         color: "black",
                                                         textAlign: "center",
                                                         padding: "10px",
@@ -871,7 +826,25 @@ class DecoQueue extends Component {
                                 },
                             },
                             { name: "Length" },
-                            { name: "QTY" },
+                            {
+                                name: "QTY",
+                                options: {
+                                    customBodyRender: (value, dataIndex) => {
+                                        let descrip = dataIndex.rowData[3];
+                                        if (descrip.includes("Pack")) {
+                                            let packIndex = descrip.indexOf("Pack");
+                                            let packQuantity = packIndex - 2;
+                                            return descrip[packQuantity] * value;
+                                        } else if (descrip.includes("PACK")) {
+                                            let packIndex = descrip.indexOf("PACK");
+                                            let packQuantity = packIndex - 2;
+                                            return descrip[packQuantity] * value;
+                                        } else {
+                                            return value
+                                        }
+                                    }
+                                }
+                            },
                             { name: "Created At" },
                             {
                                 name: "Number to Run",
@@ -1069,7 +1042,8 @@ class DecoQueue extends Component {
                                 bottom: 0,
                                 position: "fixed",
                                 borderRadius: "10%",
-                                height: "600px",
+                                padding: "1em",
+                                height: "300px",
                                 width: "400px",
                                 zIndex: "1000000000",
                                 border: "50px",
@@ -1096,7 +1070,7 @@ class DecoQueue extends Component {
                                         variant="outlined"
                                         label="Enter amount to run"
                                         name="edit"
-                                        placeholder="...enter number"
+                                        placeholder="Enter amount to run"
                                         // value of local state as text value
                                         value={this.state.need_to_run}
                                         type="text"
@@ -1138,16 +1112,17 @@ class DecoQueue extends Component {
                                 bottom: 0,
                                 position: "fixed",
                                 borderRadius: "10%",
-                                height: "600px",
+                                height: "250px",
                                 width: "400px",
                                 zIndex: "1000000000",
                                 border: "50px",
-                                overflow: "scroll",
+                                overflow: "hidden",
+                                padding: "1em",
                                 fontSize: "15px",
                                 backgroundColor: "white",
                             }}
                             elevation="24"
-                            className="loginBox"
+                            className="editQuantity"
                         >
                             <td
                                 style={{
@@ -1157,6 +1132,8 @@ class DecoQueue extends Component {
                             >
                                 <br />
                                 <br />{" "}
+                                <h2 className="editQuantityHeader">Edit Quantity</h2>
+                                <hr />
                                 <form
                                     onSubmit={(event) => {
                                         //prevents default action
@@ -1214,11 +1191,12 @@ class DecoQueue extends Component {
                                     <TextField
                                         style={{
                                             width: "150%",
+                                            marginRight: "1em"
                                         }}
                                         variant="outlined"
                                         label="Enter amount to run"
                                         name="edit"
-                                        placeholder="...enter number"
+                                        placeholder="Enter amount to run"
                                         // value of local state as text value
                                         value={this.state.need_to_run}
                                         type="text"
@@ -1233,8 +1211,8 @@ class DecoQueue extends Component {
                                     <br />
                                     <br />
                                     {/* onClick tied to form element, runs submitInfo on click */}
-                                    <Button variant="success" type="submit">
-                                        Set Amount
+                                    <Button variant="success" type="submit" className="setAmount">
+                                        Confirm
                                     </Button>
                                 </form>
                                 {/* toggles edit window back to not displaying */}
@@ -1243,8 +1221,8 @@ class DecoQueue extends Component {
                                 <br />
                                 <br />
                                 <br />
-                                <Button onClick={this.toggle6} variant="success" type="submit">
-                                    Go Back
+                                <Button onClick={this.toggle6} variant="secondary" type="submit" className="goBack">
+                                    <CloseIcon />
                                 </Button>
                             </td>
                         </Paper>

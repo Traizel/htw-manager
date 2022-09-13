@@ -54,7 +54,6 @@ class Complete extends Component {
         this.props.dispatch({
             type: "DELETE_HISTORY_RANGE",
         });
-        console.log("COMPLETED LIST Reducer: ", this.props.completelist)
     }
     checkHistory = (event) => {
         const { email } = this.state;
@@ -97,7 +96,7 @@ class Complete extends Component {
 
     cleanDate = (date) => {
         if (date) {
-            let cleanedDate = date.slice(5, 16);
+            let cleanedDate = date.slice(5, 15);
             return cleanedDate;
         } else {
             return
@@ -145,7 +144,6 @@ class Complete extends Component {
                                 onClick={(event) => {
                                     if (dataSelector[0]) {
                                         event.preventDefault();
-                                        console.log(dataSelector);
 
                                         for (let index = 0; index < dataSelector.length; index++) {
                                             const element = dataSelector[index];
@@ -246,7 +244,6 @@ class Complete extends Component {
                                         let checkInput = document.getElementsByTagName("input");
                                         for (let index = 0; index < checkInput.length; index++) {
                                             const element = checkInput[index];
-                                            console.log(element.checked);
                                             element.checked = false;
                                         }
                                         //empty data selector because nothing is checked
@@ -314,7 +311,6 @@ class Complete extends Component {
                                                 let checkInput = document.getElementsByTagName("input");
                                                 for (let index = 0; index < checkInput.length; index++) {
                                                     const element = checkInput[index];
-                                                    console.log(element.checked);
                                                     element.checked = false;
                                                 }
                                                 dataSelector = [];
@@ -396,11 +392,12 @@ class Complete extends Component {
                                     filter: true,
                                     sort: true,
                                     // empty: true,
-                                    customBodyRender: (value, tableMeta, updateValue) => {
+                                    customBodyRender: (value, dataIndex) => {
                                         decoSku3 = value.slice(0, 6);
                                         decoSku5 = value.slice(0, 3);
                                         decoSku7 = value.slice(0, 7);
                                         decoSku6 = value.slice(0, 8);
+                                        let descrip = dataIndex.rowData[3];
                                         if (
                                             decoSku5 === "SD1" ||
                                             decoSku5 === "SD2" ||
@@ -411,7 +408,8 @@ class Complete extends Component {
                                             decoSku5 === "SD7" ||
                                             decoSku5 === "SD8" ||
                                             decoSku5 === "SD9" ||
-                                            decoSku6 === "SETUPFEE"
+                                            decoSku6 === "SETUPFEE" ||
+                                            descrip.includes("Bundle")
                                         ) {
                                             return (
                                                 <div
@@ -453,7 +451,8 @@ class Complete extends Component {
                                             decoSku5 === "CS6" ||
                                             decoSku5 === "CS7" ||
                                             decoSku5 === "CS8" ||
-                                            decoSku5 === "CS9"
+                                            decoSku5 === "CS9" ||
+                                            decoSku6 === "CUSTOM-S"
                                         ) {
                                             return (
                                                 <div
@@ -503,7 +502,8 @@ class Complete extends Component {
                                             decoSku5 === "CD6" ||
                                             decoSku5 === "CD7" ||
                                             decoSku5 === "CD8" ||
-                                            decoSku5 === "CD9"
+                                            decoSku5 === "CD9" ||
+                                            decoSku6 === "CUSTOM-H"
                                         ) {
                                             return (
                                                 <div
@@ -550,7 +550,7 @@ class Complete extends Component {
                                     // empty: true,
                                     customBodyRender: (value, tableMeta, updateValue) => {
                                         descrip = value.slice(value.length - 4);
-                                        if (descrip === "Pack" || descrip === "pack") {
+                                        if (descrip === "Pack" || descrip === "pack" || descrip === "PACK") {
                                             return (
                                                 <div
                                                     style={{
@@ -565,6 +565,21 @@ class Complete extends Component {
                                                     {value}
                                                 </div>
                                             );
+                                        } else if (value.includes("Bundle")) {
+                                            return (
+                                                <div
+                                                    style={{
+                                                        width: "100%",
+                                                        height: "100%",
+                                                        backgroundColor: "rgb(131 206 206)",
+                                                        color: "black",
+                                                        textAlign: "center",
+                                                        padding: "10px",
+                                                    }}
+                                                >
+                                                    {value}
+                                                </div>
+                                            ); 
                                         } else {
                                             return <div>{value}</div>;
                                         }
@@ -572,7 +587,25 @@ class Complete extends Component {
                                 },
                             },
                             { name: "Length" },
-                            { name: "QTY" },
+                            {
+                                name: "QTY",
+                                options: {
+                                    customBodyRender: (value, dataIndex) => {
+                                        let descrip = dataIndex.rowData[3];
+                                        if (descrip.includes("Pack")) {
+                                            let packIndex = descrip.indexOf("Pack");
+                                            let packQuantity = packIndex - 2;
+                                            return descrip[packQuantity] * value;
+                                        } else if (descrip.includes("PACK")) {
+                                            let packIndex = descrip.indexOf("PACK");
+                                            let packQuantity = packIndex - 2;
+                                            return descrip[packQuantity] * value;
+                                        } else {
+                                            return value
+                                        }
+                                    }
+                                }
+                            },
                             { name: "Created At" },
                         ]}
                         title={"Completed items"} //give the table a name
